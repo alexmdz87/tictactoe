@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"/>
+
+        <title>Tic Tac Toc</title>  
+    </h:head>
+    <h:body>
+
+        <div class="col-md-6 offset-md-3">
+            
+            <h1 style="text-align: center; margin-top: 10%;">Try to bet me!</h1>
+            <hr/>
+
+            <h:form id="formSelection" prependId="false">
+                <div class="row justify-content-md-center">
+
+                    
+                    <p:selectOneButton id="playerSelection" value="#{game.human.orderPosition}" 
+                                       disabled="#{game.state=='started'}"
+                                       required="true" requiredMessage="Please Choose One">
+                        <f:selectItem itemLabel="Player One" itemValue="1" />
+                        <f:selectItem itemLabel="Player Two" itemValue="2" />
+                    </p:selectOneButton>
+
+                    <p:commandButton id="startBtn" title="Start" disabled="#{'started'==game.state}"
+                                     process="formSelection" update="formSelection, formDashbord"
+                                     action="#{game.startGame()}" />
+                    
+                </div>
+            </h:form>
+            
+            <br/>
+            
+            <h:form id="formDashbord" prependId="false">
+
+                <div class="">
+                    <div class="row justify-content-md-center">
+                        
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[0]?'-':1==game.boardPositions[0]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[0]}"
+                                         actionListener="#{game.humanMoves(1)}" update="formDashbord">
+                        </p:commandButton>
+
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[1]?'-':1==game.boardPositions[1]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[1]}"
+                                         actionListener="#{game.humanMoves(2)}" update="formDashbord">
+                        </p:commandButton>
+
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[2]?'-':1==game.boardPositions[2]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[2]}"
+                                         actionListener="#{game.humanMoves(3)}" update="formDashbord">
+                        </p:commandButton>
+                        
+                  </div>
+                    <div class="row justify-content-md-center">
+                        
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[3]?'-':1==game.boardPositions[3]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[3]}"
+                                         actionListener="#{game.humanMoves(4)}" update="formDashbord">
+                        </p:commandButton>
+
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[4]?'-':1==game.boardPositions[4]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[4]}"
+                                         actionListener="#{game.humanMoves(5)}" update="formDashbord">
+                        </p:commandButton>
+
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[5]?'-':1==game.boardPositions[5]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[5]}"
+                                         actionListener="#{game.humanMoves(6)}" update="formDashbord">
+                        </p:commandButton>
+                        
+                    </div>
+                    <div class="row justify-content-md-center">
+                        
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[6]?'-':1==game.boardPositions[6]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[6]}"
+                                         actionListener="#{game.humanMoves(7)}" update="formDashbord">
+                        </p:commandButton>
+
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[7]?'-':1==game.boardPositions[7]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[7]}"
+                                         actionListener="#{game.humanMoves(8)}" update="formDashbord">
+                        </p:commandButton>
+
+                        <p:commandButton class="boardPositions" title="#{null==game.boardPositions[8]?'-':1==game.boardPositions[8]?'X':'O'}"
+                                         disabled="#{'started'!=game.state || numm!=game.boardPositions[8]}"
+                                         actionListener="#{game.humanMoves(9)}" update="formDashbord">
+                        </p:commandButton>
+                        
+                    </div>
+                </div>
+                
+                <p:panelGrid style="position: absolute" rendered="#{null!=game.winner}">
+                    <p:outputLabel rendered="#{game.winner == game.human.orderPosition}">Ganaste!.. esto no debio pasar</p:outputLabel>
+                    <p:outputLabel rendered="#{game.winner == game.machine.orderPosition}">Perdiste!... sorry</p:outputLabel>
+                </p:panelGrid>
+            </h:form>
+
+        </div>
+
+    </h:body>
+    
+    <style>
+        .boardPositions{
+            width: 70px;
+            font-size: 50px;
+        }
+    </style>
+
+</html>
+
