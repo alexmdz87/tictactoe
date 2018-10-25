@@ -16,7 +16,7 @@ public class Gamer {
     
     private int orderPosition;
     private ArrayList<Integer> earnedPositions;
-    private Integer[][] expectedPosilibities;
+    private Integer[] expectedPosilibities;
     private ArrayList<String> expectedGoals;
     
     public Gamer(){
@@ -47,11 +47,11 @@ public class Gamer {
         this.earnedPositions = earnedPositions;
     }
 
-    public Integer[][] getExpectedPosilibities() {
+    public Integer[] getExpectedPosilibities() {
         return expectedPosilibities;
     }
 
-    public void setExpectedPosilibities(Integer[][] expectedPosilibities) {
+    public void setExpectedPosilibities(Integer[] expectedPosilibities) {
         this.expectedPosilibities = expectedPosilibities;
     }
 

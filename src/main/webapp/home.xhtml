@@ -16,7 +16,7 @@
 
         <div class="col-md-6 offset-md-3">
             
-            <h1 style="text-align: center; margin-top: 10%;">Try to bet me!</h1>
+            <h1 style="text-align: center; margin-top: 10%;">Try to beat me!</h1>
             <hr/>
 
             <h:form id="formSelection" prependId="false">
@@ -46,17 +46,17 @@
                         
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[0]?'-':1==game.boardPositions[0]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[0]}"
-                                         actionListener="#{game.humanMoves(1)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(0)}" update="formDashbord">
                         </p:commandButton>
 
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[1]?'-':1==game.boardPositions[1]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[1]}"
-                                         actionListener="#{game.humanMoves(2)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(1)}" update="formDashbord">
                         </p:commandButton>
 
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[2]?'-':1==game.boardPositions[2]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[2]}"
-                                         actionListener="#{game.humanMoves(3)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(2)}" update="formDashbord">
                         </p:commandButton>
                         
                   </div>
@@ -64,17 +64,17 @@
                         
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[3]?'-':1==game.boardPositions[3]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[3]}"
-                                         actionListener="#{game.humanMoves(4)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(3)}" update="formDashbord">
                         </p:commandButton>
 
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[4]?'-':1==game.boardPositions[4]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[4]}"
-                                         actionListener="#{game.humanMoves(5)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(4)}" update="formDashbord">
                         </p:commandButton>
 
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[5]?'-':1==game.boardPositions[5]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[5]}"
-                                         actionListener="#{game.humanMoves(6)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(5)}" update="formDashbord">
                         </p:commandButton>
                         
                     </div>
@@ -82,17 +82,17 @@
                         
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[6]?'-':1==game.boardPositions[6]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[6]}"
-                                         actionListener="#{game.humanMoves(7)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(6)}" update="formDashbord">
                         </p:commandButton>
 
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[7]?'-':1==game.boardPositions[7]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[7]}"
-                                         actionListener="#{game.humanMoves(8)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(7)}" update="formDashbord">
                         </p:commandButton>
 
                         <p:commandButton class="boardPositions" title="#{null==game.boardPositions[8]?'-':1==game.boardPositions[8]?'X':'O'}"
                                          disabled="#{'started'!=game.state || numm!=game.boardPositions[8]}"
-                                         actionListener="#{game.humanMoves(9)}" update="formDashbord">
+                                         actionListener="#{game.mechanicMove(8)}" update="formDashbord">
                         </p:commandButton>
                         
                     </div>
@@ -101,7 +101,9 @@
                 <p:panelGrid style="position: absolute" rendered="#{null!=game.winner}">
                     <p:outputLabel rendered="#{game.winner == game.human.orderPosition}">Ganaste!.. esto no debio pasar</p:outputLabel>
                     <p:outputLabel rendered="#{game.winner == game.machine.orderPosition}">Perdiste!... sorry</p:outputLabel>
+                    
                 </p:panelGrid>
+                <p:outputLabel rendered="#{game.state eq 'finished' and game.winner eq null}">Vaya empatamos!...</p:outputLabel>
             </h:form>
 
         </div>

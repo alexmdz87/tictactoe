@@ -8,6 +8,7 @@ package com.challenge.view;
 import com.challenge.bll.Gamer;
 import com.challenge.bll.ArtifitialGamer;
 import com.utils.StrategyUtils;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.faces.bean.ManagedBean;
@@ -28,10 +29,6 @@ public class GameBean {
 
     private Integer winner;
 
-    private static final String[] MovWinner = {"012", "345", "678",
-        "036", "147", "258",
-        "048", "246"};
-
     public GameBean() {
         boardPositions = new Integer[9];
         state = "";
@@ -42,7 +39,7 @@ public class GameBean {
 
     public void startGame() {
         state = "started";
-        Collections.addAll(machine.getExpectedGoals(), MovWinner);
+        Collections.addAll(machine.getExpectedGoals(), StrategyUtils.MovWinner);
 
         //Assign order player position of the machine
         machine.setOrderPosition((1 == human.getOrderPosition()) ? 2 : 1);
@@ -52,18 +49,28 @@ public class GameBean {
             machine.smartMove(boardPositions);
         }
 
-        //machine.setExpectedGoals(MovWinner);
     }
 
-    public void humanMoves(Integer position) {
-        boardPositions[position - 1] = human.getOrderPosition();
+    public void mechanicMove(Integer position) {
+        boardPositions[position] = human.getOrderPosition();
         human.markPosition(position);
         validatePosibleWinner(human.getOrderPosition());
-
+        
+        if(StrategyUtils.evalTie(boardPositions))
+            state="finished";
+        else
+            automaticMove();
+        
+    }
+    
+    public void automaticMove() {
         if ("started".equals(state)) {
             machine.smartMove(boardPositions);
             validatePosibleWinner(machine.getOrderPosition());
         }
+        
+        if(StrategyUtils.evalTie(boardPositions))
+            state="finished";
     }
 
     private boolean validatePosibleWinner(Integer playerMoving) {
@@ -74,10 +81,10 @@ public class GameBean {
             
             Arrays.sort(charCurrentPos);
             
-            for (String movToWin :MovWinner) {             
+            for (String movToWin : StrategyUtils.MovWinner) {             
                 char[] charWinnerPos = movToWin.toCharArray();
 
-                if(charCurrentPos.length>3)               
+                if(charCurrentPos.length>2)               
                 
                 if(Arrays.binarySearch(charCurrentPos, charWinnerPos[0])>=0)
                     if(Arrays.binarySearch(charCurrentPos, charWinnerPos[1])>=0)

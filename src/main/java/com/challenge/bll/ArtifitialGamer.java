@@ -5,8 +5,8 @@
  */
 package com.challenge.bll;
 
+import com.utils.StrategyUtils;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,121 +16,67 @@ import java.util.Map;
  * @author alexmendez
  */
 public class ArtifitialGamer extends Gamer {
-
-    public int smartMove(Integer[] boardPositions) {
-
-        ArrayList<Integer> avPos = findEmptyPos(boardPositions);
-        ArrayList<Integer> enemyPos = findTakenPos(boardPositions);
-        evaluateTakenGoals(this.getExpectedGoals(), enemyPos);
-
-        Integer bestMove = findFreqBestPos(avPos);
-
-        if (null != bestMove) {
-            boardPositions[bestMove] = (this.getOrderPosition());
-            markPosition(bestMove);
-        }
+    
+    public int smartMove(Integer[] boardPositions){
+        ArrayList<Integer> availablePos = StrategyUtils.findEmptyPos(boardPositions);
+        ArrayList<Integer> enemyPos = StrategyUtils.findEnemyPos(boardPositions,this.getOrderPosition());
+        ArrayList<Integer> myPositions = StrategyUtils.findEnemyPos(boardPositions,this.getOrderPosition()==1?2:1);
         
-        return bestMove;
+        ArrayList<String> goalForEnemy=StrategyUtils.filterTakenGoals(this.getExpectedGoals(), enemyPos);
+        StrategyUtils.filterTakenGoals(goalForEnemy, myPositions);
+
+        ArrayList<String> goals= new ArrayList<>();
+        Collections.addAll(goals, StrategyUtils.MovWinner);
+        StrategyUtils.filterTakenGoals(goals, myPositions);
+        
+        //find positive priority
+        Integer priorPosition = StrategyUtils.findPositivePrior(this.getExpectedGoals(), myPositions);
+        if(null==priorPosition)
+            priorPosition = StrategyUtils.findPositivePrior(goals, enemyPos);
+        
+        if(null!=priorPosition){
+            boardPositions[priorPosition] = (this.getOrderPosition());
+            markPosition(priorPosition);
+            return priorPosition;
+        }
+    
+        //find based positive movements
+        Map<Integer, Integer> plusPosMap = mapPointsByPosition(availablePos, myPositions, true, this.getExpectedGoals());
+        //find based negative movements
+        Map<Integer, Integer> minusPosMap = mapPointsByPosition(availablePos, enemyPos, false, goalForEnemy);
+        
+        Integer bestProfitMove=StrategyUtils.validateBestProfits(plusPosMap,minusPosMap);
+        
+        //make a movement because no body is going to win
+        if(null==bestProfitMove){
+            bestProfitMove = availablePos.get(0);
+        }
+        boardPositions[bestProfitMove] = (this.getOrderPosition());
+        markPosition(bestProfitMove);
+        
+        return bestProfitMove;
 
     }
 
-    public Integer findFreqBestPos(ArrayList<Integer> avPositionsThisMove) {
-        Map<Integer, Integer> posWinstadMap = new HashMap<>();
-
-        System.out.println("positionsToevaluate:");
-        for (int i = 0; i < avPositionsThisMove.size(); i++) {
-
-            Integer positionToeval = avPositionsThisMove.get(i);
-
-            System.out.println("positionl-" + positionToeval);
-
-            //Contar en cuantos mov ganadores esta esta posicion
-            int freq = 0;
-//            String[] winnerMovs = this.getExpectedGoals();
-
-            for (String avWinMovIA1 : this.getExpectedGoals()) {
-                //Saber si en este movimiento ganador esta este posicion
-//                if(avWinMovIA.contains(position.toString()))
-//                    freq+=1;
-
-                System.out.println("avWinMovIA1"+avWinMovIA1);
-
-                if (avWinMovIA1.matches("(.*)" + positionToeval + "(.*)")) {
-                    freq += 1;
-                }
-
-                if (null != this.getEarnedPositions() && this.getEarnedPositions().isEmpty()) {
-                    for (Integer a : this.getEarnedPositions()) {
-                        if (avWinMovIA1.matches("(.*)" + positionToeval + "(.*)")) {
-//                            freq += (1 * this.getEarnedPositions().size());
-                            freq += this.getEarnedPositions().size();
-                        }
-                    }
-                }
-            }
-
-            System.out.println("MovGanadores:" + freq);
-
-            posWinstadMap.put(positionToeval, freq);
-
-        }
-        Integer maxFreqPos = obtainMaxFreq(posWinstadMap);
-        System.out.println("maxFrqPos:" + maxFreqPos);
+    public Integer findFreqBestPos(ArrayList<Integer> availablePositionsThisMove, ArrayList<Integer> gamerPositions, boolean positiveMoves, ArrayList<String> involvedGoal) {        
+        Map<Integer, Integer> posMap = mapPointsByPosition(availablePositionsThisMove, gamerPositions, positiveMoves, involvedGoal);
+        Integer maxFreqPos = StrategyUtils.obtainMaxFreq(posMap);
 
         return maxFreqPos;
     }
+    
+    public Map<Integer, Integer> mapPointsByPosition(ArrayList<Integer> emptyPositionsThisMove, ArrayList<Integer> gamerPositions, boolean positiveMoves, ArrayList<String> involvedGoals){
+        Map<Integer, Integer> posWinstadMap = new HashMap<>();
 
-    private ArrayList<Integer> findEmptyPos(Integer[] boardPositions) {
-        ArrayList<Integer> posAv = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            if (null == boardPositions[i]) {
-                posAv.add(i);
-            }
+        for (int i = 0; i < emptyPositionsThisMove.size(); i++) {
+            Integer positionToeval = emptyPositionsThisMove.get(i);
+
+            //Contar en cuantos mov ganadores esta esta posicion
+            int freq = StrategyUtils.findMovesByPosition(positionToeval,involvedGoals,gamerPositions, positiveMoves);
+
+            posWinstadMap.put(positionToeval, freq);
         }
-        return posAv;
-    }
-
-    private ArrayList<Integer> findTakenPos(Integer[] boardPositions) {
-        ArrayList<Integer> posAv = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            if (null != boardPositions[i]) {
-                if (this.getOrderPosition() != boardPositions[i]) {
-                    posAv.add(i);
-                }
-            }
-        }
-        return posAv;
-    }
-
-    private Integer obtainMaxFreq(Map<Integer, Integer> posWinstadMap) {
-        Integer keyMaxFreq = null;
-        for (Integer key : posWinstadMap.keySet()) {
-            if (null == keyMaxFreq) {
-                keyMaxFreq = key;
-            } else if (posWinstadMap.get(keyMaxFreq) < posWinstadMap.get(key)) {
-                keyMaxFreq = key;
-            }
-        }
-        return keyMaxFreq;
-    }
-
-    private void evaluateTakenGoals(ArrayList<String> expectedGoals, ArrayList<Integer> enemyPos) {
-        ArrayList<String> goalToDel=new ArrayList<>();
-        for (Integer posToDel : enemyPos) {
-
-            for (int i=0; i<expectedGoals.size(); i++) {
-//                String avWinMovIA1 : expectedGoals
-
-                if (expectedGoals.get(i).matches("(.*)" + posToDel + "(.*)")) {
-                    goalToDel.add(expectedGoals.get(i));
-                    
-                }
-                
-            }
-            goalToDel.stream() .forEach(a->expectedGoals.remove(a));
-            
-            
-        }
+        return posWinstadMap;
     }
 
 }
